@@ -4,7 +4,6 @@ import react from "@vitejs/plugin-react";
 import {fileURLToPath} from "url";
 import {dirname, resolve} from "path";
 
-// تعریف __dirname و __filename در ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -12,7 +11,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     lib: {
-      entry: resolve(__dirname, "src/chatbot-widget.jsx"), // استفاده از resolve برای مسیر
+      entry: resolve(__dirname, "src/chatbot-widget.jsx"),
       name: "ChatbotWidget",
       formats: ["iife"],
       fileName: () => "chatbot-widget.js"
@@ -21,23 +20,25 @@ export default defineConfig({
       external: [],
       output: {
         globals: {
-          react: "React",
+          react: "React", // اصلاح синтакس
           "react-dom": "ReactDOM"
+        },
+        // تنظیم نام فایل‌های استاتیک (مانند CSS)
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name.endsWith(".css")) {
+            return "chatbot-widget.css";
+          }
+          return assetInfo.name;
         }
       }
     },
     outDir: "dist",
     emptyOutDir: true,
-    cssCodeSplit: false // غیرفعال کردن تقسیم‌بندی CSS
+    cssCodeSplit: false, // غیرفعال کردن تقسیم‌بندی CSS
+    cssMinify: true // فشرده‌سازی CSS
   },
   css: {
-    // تنظیمات برای تولید فایل CSS
-    preprocessorOptions: {
-      // اگر از SCSS یا سایر پیش‌پردازنده‌ها استفاده می‌کنید
-    },
-    // تنظیم نام فایل CSS خروجی
-    output: {
-      fileName: "chatbot-widget.css"
-    }
+    transformer: "postcss", // استفاده از PostCSS برای Tailwind
+    devSourcemap: true // برای دیباگ در توسعه
   }
 });

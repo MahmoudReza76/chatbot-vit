@@ -2,8 +2,8 @@
 import React from "react";
 import {createRoot} from "react-dom/client";
 import ChatWidget from "./components/ChatWidget";
+import "./index.css"; // وارد کردن CSS برای باندل
 
-// تابع برای رندر ویجت
 function renderChatbot({domain, chatBotId, targetId}) {
   const container = document.getElementById(targetId);
   if (!container) {
@@ -11,13 +11,23 @@ function renderChatbot({domain, chatBotId, targetId}) {
     return;
   }
 
-  const root = createRoot(container);
+  // ایجاد Shadow DOM
+  const shadow = container.attachShadow({mode: "open"});
+  const wrapper = document.createElement("div");
+  shadow.appendChild(wrapper);
+
+  // افزودن استایل‌ها به Shadow DOM
+  const styleLink = document.createElement("link");
+  styleLink.rel = "stylesheet";
+  styleLink.href = "https://chatbot-vit.vercel.app/chatbot-widget.css";
+  console.log("Loading CSS:", styleLink.href);
+  shadow.appendChild(styleLink);
+
+  const root = createRoot(wrapper);
   root.render(<ChatWidget domain={domain} chatBotId={chatBotId} />);
 }
 
-// تابع برای مقداردهی اولیه ویجت
 function initChatbot() {
-  // پیدا کردن تمام تگ‌های script که ویجت را لود می‌کنند
   const scripts = document.querySelectorAll('script[src*="chatbot-widget.js"]');
 
   scripts.forEach((script) => {
@@ -35,13 +45,11 @@ function initChatbot() {
   });
 }
 
-// اطمینان از اجرای تابع وقتی DOM آماده است
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initChatbot);
 } else {
   initChatbot();
 }
 
-// افزودن تابع به window برای دسترسی دستی (اختیاری)
 window.initChatbot = initChatbot;
 window.renderChatbot = renderChatbot;

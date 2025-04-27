@@ -1,4 +1,5 @@
 import ChatWidget from "./components/ChatWidget";
+import "./index.css";
 const WidgetPage = (searchParams) => {
   const {
     domain = "test.danavan.ai",
