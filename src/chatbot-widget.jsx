@@ -1,26 +1,30 @@
-// src/chatbot-widget.jsx
 import React from "react";
 import {createRoot} from "react-dom/client";
 import ChatWidget from "./components/ChatWidget";
-import "./index.css"; // وارد کردن CSS برای باندل
+import "./index.css";
 
-function renderChatbot({domain, chatBotId, targetId}) {
-  const container = document.getElementById(targetId);
-  if (!container) {
-    console.error(`Element with ID ${targetId} not found.`);
-    return;
-  }
+// فرض می‌کنیم domain از WidgetPage به صورت ثابت یا از طریق window دریافت می‌شود
+const DEFAULT_DOMAIN = "test.danavan.ai"; // یا از WidgetPage به صورت دینامیک
+
+function renderChatbot({chatBotId, domain = DEFAULT_DOMAIN}) {
+  const container = document.createElement("div");
+  container.id = "chatbot-dynamic-container";
+  document.body.appendChild(container);
 
   // ایجاد Shadow DOM
   const shadow = container.attachShadow({mode: "open"});
   const wrapper = document.createElement("div");
   shadow.appendChild(wrapper);
 
-  // افزودن استایل‌ها به Shadow DOM
+  // لود CSS
   const styleLink = document.createElement("link");
   styleLink.rel = "stylesheet";
   styleLink.href = "https://chatbot-vit.vercel.app/chatbot-widget.css";
-  console.log("Loading CSS:", styleLink.href);
+  console.log("Attempting to load CSS:", styleLink.href);
+  styleLink.onerror = () =>
+    console.error("Failed to load CSS:", styleLink.href);
+  styleLink.onload = () =>
+    console.log("CSS loaded successfully:", styleLink.href);
   shadow.appendChild(styleLink);
 
   const root = createRoot(wrapper);
@@ -28,19 +32,21 @@ function renderChatbot({domain, chatBotId, targetId}) {
 }
 
 function initChatbot() {
-  const scripts = document.querySelectorAll('script[src*="chatbot-widget.js"]');
+  const scripts = document.querySelectorAll("script[data-chatbot-id]");
 
   scripts.forEach((script) => {
-    const domain = script.getAttribute("data-domain");
     const chatBotId = script.getAttribute("data-chatbot-id");
-    const targetId = script.getAttribute("data-target-id");
+    console.log("Script attributes:", {chatBotId});
 
-    if (domain && chatBotId && targetId) {
-      renderChatbot({domain, chatBotId, targetId});
+    if (chatBotId) {
+      renderChatbot({
+        chatBotId,
+        domain: window.chatbotDomain || "test.danavan.ai"
+      });
     } else {
-      console.error(
-        "Missing required data attributes: data-domain, data-chatbot-id, or data-target-id"
-      );
+      console.error("Missing required data attribute: data-chatbot-id", {
+        chatBotId
+      });
     }
   });
 }

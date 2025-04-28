@@ -14,16 +14,15 @@ export default defineConfig({
       entry: resolve(__dirname, "src/chatbot-widget.jsx"),
       name: "ChatbotWidget",
       formats: ["iife"],
-      fileName: () => "chatbot-widget.js"
+      fileName: () => "30603ad0ee0fc8b.js"
     },
     rollupOptions: {
       external: [],
       output: {
         globals: {
-          react: "React", // اصلاح синтакس
+          react: "React",
           "react-dom": "ReactDOM"
         },
-        // تنظیم نام فایل‌های استاتیک (مانند CSS)
         assetFileNames: (assetInfo) => {
           if (assetInfo.name.endsWith(".css")) {
             return "chatbot-widget.css";
@@ -34,11 +33,18 @@ export default defineConfig({
     },
     outDir: "dist",
     emptyOutDir: true,
-    cssCodeSplit: false, // غیرفعال کردن تقسیم‌بندی CSS
-    cssMinify: true // فشرده‌سازی CSS
+    cssCodeSplit: false,
+    cssMinify: true,
+    sourcemap: true
   },
   css: {
-    transformer: "postcss", // استفاده از PostCSS برای Tailwind
-    devSourcemap: true // برای دیباگ در توسعه
+    transformer: "postcss",
+    devSourcemap: true
+  },
+  define: {
+    "process.env.NODE_ENV": JSON.stringify(
+      process.env.NODE_ENV || "production"
+    ),
+    "process.env": {}
   }
 });
